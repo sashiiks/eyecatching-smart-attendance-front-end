@@ -54,6 +54,10 @@ def login():
             # dapetin data login dalam bentuk json
             userLoginData = login.json()
 
+            # cek kalo email or password salah
+            if userLoginData['operation_status'] == -8:
+                return render_template("auth/login.html",)
+
             # dapetin role user
             userRole = userLoginData['data']['user']['role']
 
