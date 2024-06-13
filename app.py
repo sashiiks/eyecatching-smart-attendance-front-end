@@ -1,8 +1,11 @@
-from flask import Flask, render_template, request, redirect, url_for, make_response
+from flask import Flask, render_template, request, redirect, url_for, make_response, session
 from flask_jwt_extended import JWTManager, set_access_cookies, jwt_required, unset_jwt_cookies
 import requests
 
 app = Flask(__name__)
+
+# set app secret key
+app.secret_key = "ini_secret"
 
 # set jwt secret key
 app.config['JWT_SECRET_KEY'] = '3f2d7dd6853766b9a065bde16186be1a943fd2159594037522c62109e6868f3b'
@@ -25,6 +28,7 @@ def index():
 
 @app.route('/login', methods=["GET", "POST"])
 def login():
+
     # cek method http request yang masuk ke endpoint
     if request.method == "POST":
         email = request.form.get("email")
@@ -61,6 +65,9 @@ def login():
             # set cookies response pake token JWT yang didapet sebelumnya
             set_access_cookies(response, accessToken)
 
+            # simpan token jwt ke dalam session
+            session['jwt_token'] = accessToken
+
             return response
         
     return render_template("auth/login.html",)
@@ -72,19 +79,44 @@ def logout():
     return response
 
 @app.route('/dashboard', methods=["GET"])
+
+# method untuk ngasih tau flask bahwa endpoint ini butuh jwt token kalo mau ngakses
 @jwt_required()
 def dashboard():
     return render_template("index.html",)
 
 @app.route('/employees', methods=["GET"])
+
+# method untuk ngasih tau flask bahwa endpoint ini butuh jwt token kalo mau ngakses
 @jwt_required()
 def employees():
 
-    # kirim get request ke API untuk dapetin data user
-    userData = requests.get()
-    return render_template("tables.html",)
+    # ambil jwt token dari session
+    jwtToken = f"Bearer {session['jwt_token']}"
+
+    # kirim get request ke API untuk dapetin data user (di bagian header authorization diisi jwt token)
+    data = requests.get(f"{BASE_URL}/api/users", headers={"Authorization": jwtToken})
+    data = data.json()
+
+    userData = []
+
+    # iterasi melalui setiap entitas user di dalam data
+    for nodeId, userInfo in data['data'].items():
+        userId = userInfo.get('user_id', '')
+        name = userInfo.get('name', '')
+        floor = userInfo.get('floor', '')
+        print(userId)
+
+        # nambahin data user ke dalam list user_data
+        userData.append({'id': userId, 'name': name, 'floor': floor})
+    
+    print(userData)
+
+    return render_template("employees.html", data=userData)
 
 @app.route('/gallery', methods=["GET"])
+
+# method untuk ngasih tau flask bahwa endpoint ini butuh jwt token kalo mau ngakses
 @jwt_required()
 def gallery():
     return render_template("",)
