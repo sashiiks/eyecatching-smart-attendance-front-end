@@ -54,6 +54,10 @@ def login():
             # dapetin data login dalam bentuk json
             userLoginData = login.json()
 
+            # cek kalo email or password salah
+            if userLoginData['operation_status'] == -8:
+                return render_template("auth/login.html",)
+
             # dapetin role user
             userRole = userLoginData['data']['user']['role']
 
@@ -87,9 +91,6 @@ def logout():
 # method untuk ngasih tau flask bahwa endpoint ini butuh jwt token kalo mau ngakses
 @jwt_required()
 def dashboard():
-    if 'jwt_token' in session:
-        return render_template("index.html",)
-
     return redirect(url_for("login"))
 
 @app.route('/employees', methods=["GET"])
