@@ -39,8 +39,8 @@ def login():
 
             # set data login
             loginData = {
-                "email": request.form["email"],
-                "password": request.form["password"],
+                "email": email,
+                "password": password,
             }
 
             # kirim post request ke API untuk login
