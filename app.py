@@ -53,7 +53,8 @@ def login():
             userRole = userLoginData['data']['user']['role']
 
             # cek kalo login gagal berhasil by status code dan role nya bukan admin
-            if login.status_code != 200 and userRole != 1:
+            print(login.status_code != 200 and userRole != 1)
+            if login.status_code != 200 or userRole != 1:
                 return render_template("auth/login.html",)
             
             # dapetin token JWT lewat response login
