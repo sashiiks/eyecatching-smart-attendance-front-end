@@ -91,7 +91,7 @@ def logout():
 # method untuk ngasih tau flask bahwa endpoint ini butuh jwt token kalo mau ngakses
 @jwt_required()
 def dashboard():
-    return redirect(url_for("login"))
+    return render_template("index.html",)
 
 @app.route('/employees', methods=["GET"])
 # method untuk ngasih tau flask bahwa endpoint ini butuh jwt token kalo mau ngakses
