@@ -84,7 +84,6 @@ def logout():
     return response
 
 @app.route('/dashboard', methods=["GET"])
-
 # method untuk ngasih tau flask bahwa endpoint ini butuh jwt token kalo mau ngakses
 @jwt_required()
 def dashboard():
@@ -92,8 +91,8 @@ def dashboard():
         return render_template("index.html",)
 
     return redirect(url_for("login"))
-@app.route('/employees', methods=["GET"])
 
+@app.route('/employees', methods=["GET"])
 # method untuk ngasih tau flask bahwa endpoint ini butuh jwt token kalo mau ngakses
 @jwt_required()
 def employees():
@@ -122,11 +121,22 @@ def employees():
     return render_template("employees.html", data=userData)
 
 @app.route('/gallery', methods=["GET"])
-
 # method untuk ngasih tau flask bahwa endpoint ini butuh jwt token kalo mau ngakses
 @jwt_required()
 def gallery():
     return render_template("",)
+
+@app.route('/register', methods=["GET"])
+# method untuk ngasih tau flask bahwa endpoint ini butuh jwt token kalo mau ngakses
+@jwt_required()
+def register():
+    return render_template("auth/register.html",)
+
+@app.route('/attendances-log', methods=["GET"])
+# method untuk ngasih tau flask bahwa endpoint ini butuh jwt token kalo mau ngakses
+@jwt_required()
+def attendances_log():
+    return render_template("#",)
 
 if __name__ == "__main__":
     app.run(debug=True)
