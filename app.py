@@ -57,7 +57,7 @@ def login():
             # dapetin role user
             userRole = userLoginData['data']['user']['role']
 
-            # cek kalo login gagal berhasil by status code dan role nya bukan admin
+            # cek kalo login gagal by status code dan role nya bukan admin
             if login.status_code != 200 or userRole != 1:
                 return render_template("auth/login.html",)
             
