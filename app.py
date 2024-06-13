@@ -26,6 +26,11 @@ BASE_URL = "https://eyecatching-image-ghhipha43a-uc.a.run.app"
 def index():
     return "Hello"
 
+# method untuk mengembalikan ke halaman login bagi user yang tidak login dan mencoba mengakses halaman yang terproteksi 
+@jwt.unauthorized_loader
+def unauthorized_access(_err):
+    return redirect(url_for("login"))
+
 @app.route('/login', methods=["GET", "POST"])
 def login():
 
@@ -39,8 +44,8 @@ def login():
 
             # set data login
             loginData = {
-                "email": request.form["email"],
-                "password": request.form["password"],
+                "email": email,
+                "password": password,
             }
 
             # kirim post request ke API untuk login
@@ -52,8 +57,8 @@ def login():
             # dapetin role user
             userRole = userLoginData['data']['user']['role']
 
-            # cek kalo login gagal berhasil by status code dan role nya bukan admin
-            if login.status_code != 200 and userRole != 1:
+            # cek kalo login gagal by status code dan role nya bukan admin
+            if login.status_code != 200 or userRole != 1:
                 return render_template("auth/login.html",)
             
             # dapetin token JWT lewat response login
@@ -79,14 +84,15 @@ def logout():
     return response
 
 @app.route('/dashboard', methods=["GET"])
-
 # method untuk ngasih tau flask bahwa endpoint ini butuh jwt token kalo mau ngakses
 @jwt_required()
 def dashboard():
-    return render_template("index.html",)
+    if 'jwt_token' in session:
+        return render_template("index.html",)
+
+    return redirect(url_for("login"))
 
 @app.route('/employees', methods=["GET"])
-
 # method untuk ngasih tau flask bahwa endpoint ini butuh jwt token kalo mau ngakses
 @jwt_required()
 def employees():
@@ -115,11 +121,22 @@ def employees():
     return render_template("employees.html", data=userData)
 
 @app.route('/gallery', methods=["GET"])
-
 # method untuk ngasih tau flask bahwa endpoint ini butuh jwt token kalo mau ngakses
 @jwt_required()
 def gallery():
     return render_template("",)
+
+@app.route('/register', methods=["GET"])
+# method untuk ngasih tau flask bahwa endpoint ini butuh jwt token kalo mau ngakses
+@jwt_required()
+def register():
+    return render_template("auth/register.html",)
+
+@app.route('/attendances-log', methods=["GET"])
+# method untuk ngasih tau flask bahwa endpoint ini butuh jwt token kalo mau ngakses
+@jwt_required()
+def attendances_log():
+    return render_template("#",)
 
 if __name__ == "__main__":
     app.run(debug=True)
