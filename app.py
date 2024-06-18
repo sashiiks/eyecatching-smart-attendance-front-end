@@ -24,7 +24,7 @@ BASE_URL = "https://eyecatching-image-ghhipha43a-uc.a.run.app"
 
 @app.route("/")
 def index():
-    return "Hello"
+    return "login"
 
 # method untuk mengembalikan ke halaman login bagi user yang tidak login dan mencoba mengakses halaman yang terproteksi 
 @jwt.unauthorized_loader
@@ -91,7 +91,37 @@ def logout():
 # method untuk ngasih tau flask bahwa endpoint ini butuh jwt token kalo mau ngakses
 @jwt_required()
 def dashboard():
-    return render_template("index.html",)
+    # ambil jwt token dari session
+    jwtToken = f"Bearer {session['jwt_token']}"
+
+    # kirim get request ke API untuk dapetin data user (di bagian header authorization diisi jwt token)
+    data = requests.get(f"{BASE_URL}/api/users/attendance-logs", headers={"Authorization": jwtToken})
+    data = data.json()
+    print(data)
+    
+    attendanceCount = {'presence': 0, 'absent': 0}
+    userData = []
+    
+    # Iterasi melalui setiap entitas user di dalam data
+    for key, value in data.items():
+        for date, details in value.items():
+            userData.append({
+                "floor": details["floor"],
+                "status": details["status"],
+                "timestamp": details["timestamp"]
+            })
+            
+
+            # Gunakan metode .get() pada dictionary attendanceCount
+            #attendanceCount[] = attendanceCount.get(status, 0) + 1
+
+            # Tambahkan data user ke dalam list userData
+           
+
+    print(attendanceCount)
+    print(userData)
+
+    return render_template("index.html", data=userData, attendanceCount=attendanceCount)
 
 @app.route('/employees', methods=["GET"])
 # method untuk ngasih tau flask bahwa endpoint ini butuh jwt token kalo mau ngakses
@@ -121,23 +151,104 @@ def employees():
 
     return render_template("employees.html", data=userData)
 
-@app.route('/gallery', methods=["GET"])
-# method untuk ngasih tau flask bahwa endpoint ini butuh jwt token kalo mau ngakses
-@jwt_required()
-def gallery():
-    return render_template("",)
 
-@app.route('/register', methods=["GET"])
+@app.route('/register', methods=["GET", "POST"])
 # method untuk ngasih tau flask bahwa endpoint ini butuh jwt token kalo mau ngakses
 @jwt_required()
 def register():
+     # cek method http request yang masuk ke endpoint
+    if request.method == "POST":
+        id_number = request.form.get("id_number")
+        name= request.form.get("name")
+        floor = request.form.get("floor")
+        email = request.form.get("email")
+        password = request.form.get("password")
+        image_file = request.form.get("image_file")
+        
+      # cek lagi kalo email udah diisi
+        if id_number and name and floor and email and password and image_file:
+            
+         # set data Regist
+            registerData = {
+                "id_number": id_number,
+                "name": name,
+                "floor": floor,
+                "email": email,
+                "password": password,
+                "image_file": image_file,
+            }
+        
+     # kirim post request ke API untuk login
+    register = requests.post(f"{BASE_URL}/api/users", data=registerData)
+    
+    # dapetin data login dalam bentuk json
+    userRegisterData = register.json()
+    
+    # cek kalo email email ada yang sama
+    if userRegisterData['operation_status'] == -1:
+        return render_template("auth/register.html",)
+        
     return render_template("auth/register.html",)
 
+
+@app.route('/update', methods=["GET", "PUT"])
+@jwt_required()
+def update():
+    # cek method http request yang masuk ke endpoint
+    if request.method == "PUT":
+        user_id= request.form.get("user_id")
+        name= request.form.get("name")
+        floor = request.form.get("floor")
+        email = request.form.get("email")
+        password = request.form.get("password")
+        image_file = request.form.get("image_file")
+        
+    # cek lagi kalo email udah diisi
+    if user_id and name and floor and email and password and image_file:
+        
+            updateData = {
+                "user_id": user_id,
+                "name": name,
+                "floor": floor,
+                "email": email,
+                "password": password,
+                "image_file": image_file,
+            }
+     # kirim post request ke API untuk login
+    update= requests.post(f"{BASE_URL}/api/users/{user_id}", data=updateData)
+    
+    # dapetin data login dalam bentuk json
+    userUpdateData = update.json()
+    
+    return render_template("update.html",)
+    
 @app.route('/attendances-log', methods=["GET"])
 # method untuk ngasih tau flask bahwa endpoint ini butuh jwt token kalo mau ngakses
 @jwt_required()
 def attendances_log():
-    return render_template("#",)
+    # ambil jwt token dari session
+    jwtToken = f"Bearer {session['jwt_token']}"
+    
+    data = requests.get(f"{BASE_URL}/api/users/attendance-logs", headers={"Authorization": jwtToken})
+    data = data.json()
+    
+    userData = []
+    
+    for nodeId, userInfo in data['data'].items():
+            status = userInfo.get('status', '').lower()  # pastikan status dalam huruf kecil
+            userId = userInfo.get('id_user', '')
+            name = userInfo.get('name', '')
+            floor = userInfo.get('floor', '')
+            timestamp = userInfo.get('timestamp', '')
+            
+    # Tambahkan data user ke dalam list userData
+    userData.append({'id': userId, 'name': name, 'floor': floor, 'timestamp': timestamp})
+    
+    print(userData)
+    
+    return render_template("attendance.html", data=userData)
 
 if __name__ == "__main__":
     app.run(debug=True)
+    
+

@@ -140,36 +140,31 @@
                 <div class="container-fluid">
 
                     <!-- Page Heading -->
-                    <h1 class="h3 mb-2 text-gray-800">Tables</h1>
-                    <p class="mb-4">Data Karyawan PT XL Axiata.Tbk</p>
+                    <h1 class="h3 mb-2 text-gray-800">Attendance</h1>
+                    <p class="mb-4">Karyawan PT XL Axiata.Tbk</p>
 
                     <!-- DataTales Example -->
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">Data Karyawan PT XL Axiata.Tbk</h6>
+                            <h6 class="m-0 font-weight-bold text-primary">Rekap Kehadiran Karyawan PT XL Axiata.Tbk</h6>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
                                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                                     <thead>
                                         <tr>
-                                            <th>NIP</th>
-                                            <th>Nama</th>
                                             <th>Lantai</th>
-                                            <th>Aksi</th>
-
+                                            <th>Tanggal</th>
+                                            <th>Status</th>
                                         </tr>
                                     </thead>
-                                    {% for item in data %}
+                                    {% for item in Data %}
                                     <tbody>
                                         <tr>
-                                            <td>{{item.id}}</td>
-                                            <td>{{item.name}}</td>
+    
                                             <td>{{item.floor}}</td>
-                                            <td>
-                                                <a href="/update" class="btn btn-warning" role="button"><i class='bx bxs-edit'></i> Update</a>
-                                                <a href="" class="btn btn-danger" role="button"><i class='bx bxs-trash-alt'></i> Delete</a>
-                                              </td>
+                                            <td>{{item.times}}</td>
+                                            <td>{{item.status}}</td>
                                         </tr>
                                     </tbody>
                                     {% endfor %}

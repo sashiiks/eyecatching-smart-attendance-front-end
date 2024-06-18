@@ -53,4 +53,7 @@
     e.preventDefault();
   });
 
+  console.log("Data userData:", JSON.parse('{{ userData | tojson | safe }}'));
+  console.log("Data attendanceCount:", JSON.parse('{{ attendanceCount | tojson | safe }}'));
+
 })(jQuery); // End of use strict

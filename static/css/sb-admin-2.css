@@ -100,6 +100,13 @@ abbr[data-original-title] {
   text-decoration-skip-ink: none;
 }
 
+.bg-login-image {
+  background-image: url('static/img/image_54.png');
+  background-size: cover;
+  background-position: center;
+  height: 100vh; /* Atur tinggi sesuai kebutuhan */
+}
+
 address {
   margin-bottom: 1rem;
   font-style: normal;
